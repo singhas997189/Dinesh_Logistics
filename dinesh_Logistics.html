@@ -76,8 +76,21 @@
             padding: 0 2rem;
         }
 
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo-img {
+            height: 60px;
+            width: auto;
+            object-fit: contain;
+            border-radius: 8px;
+        }
+
         .logo {
-            font-size: 2rem;
+            font-size: 1.8rem;
             font-weight: 800;
             display: flex;
             align-items: center;
@@ -580,23 +593,24 @@
             width: 150px;
             height: 150px;
             margin: 0 auto 1.5rem;
-            background: linear-gradient(135deg, #ffd700, #ffed4e);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             border: 5px solid rgba(255, 255, 255, 0.2);
             animation: avatarFloat 3s ease-in-out infinite;
+            overflow: hidden;
+        }
+
+        .founder-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         @keyframes avatarFloat {
             0%, 100% { transform: translateY(0); }
             50% { transform: translateY(-10px); }
-        }
-
-        .founder-avatar i {
-            font-size: 5rem;
-            color: #0f2027;
         }
 
         .founder-card h3 {
@@ -778,6 +792,7 @@
             display: flex;
             gap: 1rem;
             margin-top: 1.5rem;
+            flex-wrap: wrap;
         }
 
         .social-links a {
@@ -832,6 +847,10 @@
             transition: all 0.4s;
             z-index: 999;
             animation: chatbotPulse 2s ease-in-out infinite;
+        }
+
+        .chatbot-button.hidden {
+            display: none;
         }
 
         @keyframes chatbotPulse {
@@ -1062,6 +1081,21 @@
             cursor: pointer;
         }
 
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .hero-content h1 {
+                font-size: 3.5rem;
+            }
+            
+            .section-title {
+                font-size: 3rem;
+            }
+            
+            .about-text h2 {
+                font-size: 3rem;
+            }
+        }
+
         @media (max-width: 968px) {
             .nav-links {
                 display: none;
@@ -1095,11 +1129,19 @@
 
             .cta-buttons {
                 flex-direction: column;
+                align-items: center;
+            }
+
+            .cta-button {
+                width: 100%;
+                max-width: 300px;
+                text-align: center;
             }
 
             .about-content,
             .contact-grid {
                 grid-template-columns: 1fr;
+                gap: 3rem;
             }
 
             .chatbot-window {
@@ -1111,6 +1153,50 @@
             .services-grid {
                 grid-template-columns: 1fr;
             }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 2rem;
+            }
+            
+            .logo {
+                font-size: 1.5rem;
+            }
+            
+            .logo-img {
+                height: 50px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero {
+                padding-top: 100px;
+            }
+            
+            .hero-content h1 {
+                font-size: 2.2rem;
+            }
+            
+            .section-title {
+                font-size: 2.5rem;
+            }
+            
+            .service-card,
+            .founder-card,
+            .contact-info,
+            .enquiry-form {
+                padding: 2rem;
+            }
+            
+            .info-item {
+                flex-direction: column;
+                text-align: center;
+                gap: 1rem;
+            }
+            
+            .social-links {
+                justify-content: center;
+            }
         }
 
         @media (max-width: 480px) {
@@ -1119,7 +1205,47 @@
             }
 
             .section-title {
-                font-size: 2.5rem;
+                font-size: 2.2rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .service-card,
+            .founder-card,
+            .contact-info,
+            .enquiry-form {
+                padding: 1.5rem;
+            }
+            
+            .logo {
+                font-size: 1.3rem;
+            }
+            
+            .logo-img {
+                height: 40px;
+            }
+            
+            nav {
+                padding: 0 1rem;
+            }
+            
+            .hero,
+            .stats,
+            .services,
+            .about,
+            .contact {
+                padding-left: 1rem;
+                padding-right: 1rem;
+            }
+            
+            .hero-content .subtitle {
+                font-size: 1.1rem;
+            }
+            
+            .hero-content .tagline {
+                font-size: 1rem;
             }
         }
     </style>
@@ -1129,9 +1255,13 @@
 
     <header>
         <nav>
-            <div class="logo">
-                <i class="fas fa-shipping-fast"></i>
-                Dinesh Logistics
+            <div class="logo-container">
+                <!-- Logo Image -->
+                <img src="https://raw.githubusercontent.com/singhas997189/Dinesh_Logistics/main/WhatsApp%20Image%202025-10-26%20at%201.21.40%20PM.png" alt="Dinesh Logistics Logo" class="logo-img">
+                <div class="logo">
+                    <i class="fas fa-shipping-fast"></i>
+                    Dinesh Logistics
+                </div>
             </div>
             <button class="mobile-menu-btn" id="mobileMenuBtn">
                 <i class="fas fa-bars"></i>
@@ -1250,7 +1380,7 @@
                 <div class="founder-card scroll-reveal">
                     <div class="content">
                         <div class="founder-avatar">
-                            <i class="fas fa-user-tie"></i>
+                            <img src="https://raw.githubusercontent.com/singhas997189/Dinesh_Logistics/main/WhatsApp%20Image%202025-10-26%20at%201.21.40%20PM.png" alt="Dinesh Singh - Founder & CEO">
                         </div>
                         <h3>Dinesh Singh</h3>
                         <p class="title">Founder & CEO</p>
@@ -1420,15 +1550,17 @@
         // N8N Webhook Configuration
         const N8N_WEBHOOK_URL = 'https://your-n8n-instance.com/webhook/dinesh-logistics-chat';
         
+        // Chat button click - open chat window and hide button
         chatbotBtn.addEventListener('click', () => {
-            chatbotWindow.classList.toggle('active');
-            if (chatbotWindow.classList.contains('active')) {
-                chatInput.focus();
-            }
+            chatbotWindow.classList.add('active');
+            chatbotBtn.classList.add('hidden');
+            chatInput.focus();
         });
 
+        // Close chat - hide chat window and show button
         closeChat.addEventListener('click', () => {
             chatbotWindow.classList.remove('active');
+            chatbotBtn.classList.remove('hidden');
         });
 
         function addMessage(text, isUser) {
