@@ -2391,7 +2391,7 @@ function removeTypingIndicator() {
 function getBotResponse(userMessage) {
     const msg = userMessage.toLowerCase();
 
-    if (msg.includes('hello') || msg.includes('hi') || msg.includes('hey')) {
+    if (msg.includes('Hello') || msg.includes('Hi') || msg.includes('Hey')) {
         return '👋 Hello! How can I assist you with your logistics needs today?';
     } else if (msg.includes('service')) {
         return '📦 We offer:\n• Container Transportation\n• Import & Export Services\n• Warehousing\n• Customs Clearance\n• 24/7 Support\n\nWhich service interests you?';
@@ -2409,7 +2409,7 @@ function getBotResponse(userMessage) {
         return '📤 Our Export Services include:\n• Packaging\n• Documentation\n• Shipping coordination\n• Global logistics\n\nExpand your business globally with us!';
     } else if (msg.includes('track') || msg.includes('tracking')) {
         return '📍 For tracking your shipment:\n• Contact us with your tracking ID\n• Email: dineshlogistics@gmail.com\n• Real-time GPS tracking available\n\nWe keep you updated every step!';
-    } else if (msg.includes('thank')) {
+    } else if (msg.includes('Thank')) {
         return '😊 You\'re welcome! Feel free to reach out anytime. Have a great day!';
     } else {
         // No match found → return null so it can call N8N next
