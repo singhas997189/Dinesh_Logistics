@@ -2340,172 +2340,167 @@
         window.addEventListener('scroll', revealOnScroll);
         window.addEventListener('load', revealOnScroll);
 
-        // Chatbot functionality
-        const chatbotBtn = document.getElementById('chatbotBtn');
-        const chatbotWindow = document.getElementById('chatbotWindow');
-        const closeChat = document.getElementById('closeChat');
-        const chatMessages = document.getElementById('chatMessages');
-        const chatInput = document.getElementById('chatInput');
-        const sendMessage = document.getElementById('sendMessage');
+        // Chatbot functionality 
+const chatbotBtn = document.getElementById('chatbotBtn');
+const chatbotWindow = document.getElementById('chatbotWindow');
+const closeChat = document.getElementById('closeChat');
+const chatMessages = document.getElementById('chatMessages');
+const chatInput = document.getElementById('chatInput');
+const sendMessage = document.getElementById('sendMessage');
 
-        // N8N Webhook Configuration
-        const N8N_WEBHOOK_URL = 'https://your-n8n-instance.com/webhook/dinesh-logistics-chat';
-        
-        // Chat button click - open chat window and hide button
-        chatbotBtn.addEventListener('click', () => {
-            chatbotWindow.classList.add('active');
-            chatbotBtn.classList.add('hidden');
-            chatInput.focus();
+// N8N Webhook Configuration
+const N8N_WEBHOOK_URL = 'https://your-n8n-instance.com/webhook/dinesh-logistics-chat';
+
+// Open Chat
+chatbotBtn.addEventListener('click', () => {
+    chatbotWindow.classList.add('active');
+    chatbotBtn.classList.add('hidden');
+    chatInput.focus();
+});
+
+// Close Chat
+closeChat.addEventListener('click', () => {
+    chatbotWindow.classList.remove('active');
+    chatbotBtn.classList.remove('hidden');
+});
+
+// Add message to chat window
+function addMessage(text, isUser) {
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `message ${isUser ? 'user-message' : 'bot-message'}`;
+    messageDiv.textContent = text;
+    chatMessages.appendChild(messageDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+// Typing indicator
+function showTypingIndicator() {
+    const typingDiv = document.createElement('div');
+    typingDiv.className = 'typing-indicator';
+    typingDiv.id = 'typingIndicator';
+    typingDiv.innerHTML = '<span></span><span></span><span></span>';
+    chatMessages.appendChild(typingDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+function removeTypingIndicator() {
+    const typingIndicator = document.getElementById('typingIndicator');
+    if (typingIndicator) typingIndicator.remove();
+}
+
+// 🔹 Built-in Responses First
+function getBotResponse(userMessage) {
+    const msg = userMessage.toLowerCase();
+
+    if (msg.includes('hello') || msg.includes('hi') || msg.includes('hey')) {
+        return '👋 Hello! How can I assist you with your logistics needs today?';
+    } else if (msg.includes('service')) {
+        return '📦 We offer:\n• Container Transportation\n• Import & Export Services\n• Warehousing\n• Customs Clearance\n• 24/7 Support\n\nWhich service interests you?';
+    } else if (msg.includes('price') || msg.includes('cost') || msg.includes('quote') || msg.includes('rate')) {
+        return '💰 For pricing information and custom quotes, please:\n• Email: dineshlogistics@gmail.com\n• Submit the enquiry form on our website\n• Call us during business hours\n\nWe\'ll get back to you within 24 hours!';
+    } else if (msg.includes('contact') || msg.includes('phone') || msg.includes('email') || msg.includes('reach')) {
+        return '📧 Contact us at:\n• Email: dineshlogistics@gmail.com\n• Location: Kolkata, West Bengal\n• Hours: Mon-Sat, 9 AM - 7 PM\n\nWould you like the full address?';
+    } else if (msg.includes('address') || msg.includes('location') || msg.includes('office')) {
+        return '📍 Our office:\n49/5, H/182, Karl Marx Sarani Rd,\nKanchan Colony, Orpan Gang Market,\nWatganj, Kolkata, West Bengal 700023\n\nVisit us during business hours!';
+    } else if (msg.includes('hour') || msg.includes('time') || msg.includes('open') || msg.includes('timing')) {
+        return '🕐 Business Hours:\nMonday - Saturday: 9:00 AM - 7:00 PM\nSunday: Closed\n\nWe\'re here to help 6 days a week!';
+    } else if (msg.includes('import')) {
+        return '🌍 Our Import Services include:\n• Customs clearance\n• Documentation\n• Door-to-door delivery\n• Compliance management\n\nLet us handle your imports smoothly!';
+    } else if (msg.includes('export')) {
+        return '📤 Our Export Services include:\n• Packaging\n• Documentation\n• Shipping coordination\n• Global logistics\n\nExpand your business globally with us!';
+    } else if (msg.includes('track') || msg.includes('tracking')) {
+        return '📍 For tracking your shipment:\n• Contact us with your tracking ID\n• Email: dineshlogistics@gmail.com\n• Real-time GPS tracking available\n\nWe keep you updated every step!';
+    } else if (msg.includes('thank')) {
+        return '😊 You\'re welcome! Feel free to reach out anytime. Have a great day!';
+    } else {
+        // No match found → return null so it can call N8N next
+        return null;
+    }
+}
+
+// 🔹 Send message to N8N only if no pre-defined response
+async function sendToN8N(userMessage) {
+    try {
+        const response = await fetch(N8N_WEBHOOK_URL, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                message: userMessage,
+                timestamp: new Date().toISOString(),
+                source: 'website_chat'
+            })
         });
-
-        // Close chat - hide chat window and show button
-        closeChat.addEventListener('click', () => {
-            chatbotWindow.classList.remove('active');
-            chatbotBtn.classList.remove('hidden');
-        });
-
-        function addMessage(text, isUser) {
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${isUser ? 'user-message' : 'bot-message'}`;
-            messageDiv.textContent = text;
-            chatMessages.appendChild(messageDiv);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
+        if (response.ok) {
+            const data = await response.json();
+            return data.reply || '🤔 Thanks for your message! Our team will contact you shortly.';
+        } else {
+            return '⚠️ Sorry, the system is temporarily busy. Please email us at dineshlogistics@gmail.com.';
         }
+    } catch (error) {
+        console.error('N8N webhook error:', error);
+        return '⚠️ Network issue! Please try again or email us at dineshlogistics@gmail.com.';
+    }
+}
 
-        function showTypingIndicator() {
-            const typingDiv = document.createElement('div');
-            typingDiv.className = 'typing-indicator';
-            typingDiv.id = 'typingIndicator';
-            typingDiv.innerHTML = '<span></span><span></span><span></span>';
-            chatMessages.appendChild(typingDiv);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-        }
+// 🔹 Handle Send
+async function handleSendMessage() {
+    const message = chatInput.value.trim();
+    if (!message) return;
 
-        function removeTypingIndicator() {
-            const typingIndicator = document.getElementById('typingIndicator');
-            if (typingIndicator) {
-                typingIndicator.remove();
-            }
-        }
+    addMessage(message, true);
+    chatInput.value = '';
 
-        async function sendToN8N(userMessage) {
+    showTypingIndicator();
+
+    // Step 1: Check for pre-defined response
+    let response = getBotResponse(message);
+
+    // Step 2: If no match found, send to N8N
+    if (!response) {
+        response = await sendToN8N(message);
+    }
+
+    // Step 3: Display response
+    setTimeout(() => {
+        removeTypingIndicator();
+        addMessage(response, false);
+    }, 800);
+}
+
+sendMessage.addEventListener('click', handleSendMessage);
+chatInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') handleSendMessage();
+});
+
+// 🔹 Enquiry form submission with animation
+document.getElementById('enquiryForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const submitButton = document.querySelector('.order');
+
+    if (!submitButton.classList.contains('animate')) {
+        submitButton.classList.add('animate');
+
+        setTimeout(async () => {
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData);
+
             try {
-                const response = await fetch(N8N_WEBHOOK_URL, {
+                await fetch('https://your-n8n-instance.com/webhook/dinesh-logistics-form', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        message: userMessage,
-                        timestamp: new Date().toISOString(),
-                        source: 'website_chat'
-                    })
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(data)
                 });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    return data.reply || getBotResponse(userMessage);
-                } else {
-                    return getBotResponse(userMessage);
-                }
             } catch (error) {
-                console.error('N8N webhook error:', error);
-                return getBotResponse(userMessage);
+                console.error('Form submission error:', error);
             }
-        }
 
-        function getBotResponse(userMessage) {
-            const msg = userMessage.toLowerCase();
-            
-            if (msg.includes('hello') || msg.includes('hi') || msg.includes('hey')) {
-                return '👋 Hello! How can I assist you with your logistics needs today?';
-            } else if (msg.includes('service')) {
-                return '📦 We offer:\n• Container Transportation\n• Import & Export Services\n• Warehousing\n• Customs Clearance\n• 24/7 Support\n\nWhich service interests you?';
-            } else if (msg.includes('price') || msg.includes('cost') || msg.includes('quote') || msg.includes('rate')) {
-                return '💰 For pricing information and custom quotes, please:\n• Email: dineshlogistics@gmail.com\n• Submit the enquiry form on our website\n• Call us during business hours\n\nWe\'ll get back to you within 24 hours!';
-            } else if (msg.includes('contact') || msg.includes('phone') || msg.includes('email') || msg.includes('reach')) {
-                return '📧 Contact us at:\n• Email: dineshlogistics@gmail.com\n• Location: Kolkata, West Bengal\n• Hours: Mon-Sat, 9 AM - 7 PM\n\nWould you like the full address?';
-            } else if (msg.includes('address') || msg.includes('location') || msg.includes('office')) {
-                return '📍 Our office:\n49/5, H/182, Karl Marx Sarani Rd,\nKanchan Colony, Orpan Gang Market,\nWatganj, Kolkata, West Bengal 700023\n\nVisit us during business hours!';
-            } else if (msg.includes('hour') || msg.includes('time') || msg.includes('open') || msg.includes('timing')) {
-                return '🕐 Business Hours:\nMonday - Saturday: 9:00 AM - 7:00 PM\nSunday: Closed\n\nWe\'re here to help 6 days a week!';
-            } else if (msg.includes('import')) {
-                return '🌍 Our Import Services include:\n• Customs clearance\n• Documentation\n• Door-to-door delivery\n• Compliance management\n\nLet us handle your imports smoothly!';
-            } else if (msg.includes('export')) {
-                return '📤 Our Export Services include:\n• Packaging\n• Documentation\n• Shipping coordination\n• Global logistics\n\nExpand your business globally with us!';
-            } else if (msg.includes('track') || msg.includes('tracking')) {
-                return '📍 For tracking your shipment:\n• Contact us with your tracking ID\n• Email: dineshlogistics@gmail.com\n• Real-time GPS tracking available\n\nWe keep you updated every step!';
-            } else if (msg.includes('thank')) {
-                return '😊 You\'re welcome! Feel free to reach out anytime. Have a great day!';
-            } else {
-                return '🤔 Thank you for your question! For detailed information, please:\n• Email: dineshlogistics@gmail.com\n• Submit an enquiry form\n• Call us during business hours\n\nOur team will assist you promptly!';
-            }
-        }
+            e.target.reset();
 
-        async function handleSendMessage() {
-            const message = chatInput.value.trim();
-            if (message) {
-                addMessage(message, true);
-                chatInput.value = '';
-                
-                showTypingIndicator();
-                
-                // Send to N8N and get response
-                const response = await sendToN8N(message);
-                
-                setTimeout(() => {
-                    removeTypingIndicator();
-                    addMessage(response, false);
-                }, 1000);
-            }
-        }
-
-        sendMessage.addEventListener('click', handleSendMessage);
-
-        chatInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                handleSendMessage();
-            }
-        });
-
-        // Form submission with animated button
-        document.getElementById('enquiryForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            // Trigger the button animation
-            const submitButton = document.querySelector('.order');
-            if(!submitButton.classList.contains('animate')) {
-                submitButton.classList.add('animate');
-                
-                // Wait for animation to complete before submitting
-                setTimeout(async () => {
-                    const formData = new FormData(e.target);
-                    const data = Object.fromEntries(formData);
-                    
-                    // You can also send form data to N8N
-                    try {
-                        await fetch('https://your-n8n-instance.com/webhook/dinesh-logistics-form', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify(data)
-                        });
-                    } catch (error) {
-                        console.error('Form submission error:', error);
-                    }
-                    
-                    // Reset form after submission
-                    e.target.reset();
-                    
-                    // Reset button animation after a delay
-                    setTimeout(() => {
-                        submitButton.classList.remove('animate');
-                    }, 10000);
-                    
-                }, 500); // Small delay to ensure animation starts
-            }
-        });
+            setTimeout(() => {
+                submitButton.classList.remove('animate');
+            }, 10000);
+        }, 500);
+    }
+});
 
         // Smooth scrolling
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
